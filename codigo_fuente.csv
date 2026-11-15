@@ -1,0 +1,230 @@
+﻿archivo,linea,codigo
+src/conexionbd/Main.java,1,package conexionbd;
+src/conexionbd/Main.java,2,
+src/conexionbd/Main.java,3,import conexionbd.vista.VentanaConexion;
+src/conexionbd/Main.java,4,
+src/conexionbd/Main.java,5,import javax.swing.SwingUtilities;
+src/conexionbd/Main.java,6,
+src/conexionbd/Main.java,7,// Punto de entrada del programa: crea la ventana y la muestra
+src/conexionbd/Main.java,8,public class Main {
+src/conexionbd/Main.java,9,
+src/conexionbd/Main.java,10,    public static void main(String[] args) {
+src/conexionbd/Main.java,11,        SwingUtilities.invokeLater(() -> {
+src/conexionbd/Main.java,12,            VentanaConexion ventana = new VentanaConexion();
+src/conexionbd/Main.java,13,            ventana.setVisible(true);
+src/conexionbd/Main.java,14,        });
+src/conexionbd/Main.java,15,    }
+src/conexionbd/Main.java,16,}
+src/conexionbd/vista/VentanaConexion.java,1,package conexionbd.vista;
+src/conexionbd/vista/VentanaConexion.java,2,
+src/conexionbd/vista/VentanaConexion.java,3,import conexionbd.controlador.ConexionController;
+src/conexionbd/vista/VentanaConexion.java,4,
+src/conexionbd/vista/VentanaConexion.java,5,"import javax.swing.*;              // Importa las clases de Swing (JFrame, JLabel, JTextField...)"
+src/conexionbd/vista/VentanaConexion.java,6,import java.awt.*;                  // Importa los layouts y colores
+src/conexionbd/vista/VentanaConexion.java,7,import java.awt.event.ActionEvent;  // Evento que se produce al hacer clic en un botón
+src/conexionbd/vista/VentanaConexion.java,8,import java.awt.event.ActionListener;
+src/conexionbd/vista/VentanaConexion.java,9,import java.sql.SQLException;
+src/conexionbd/vista/VentanaConexion.java,10,
+src/conexionbd/vista/VentanaConexion.java,11,// La clase principal extiende JFrame para ser la ventana
+src/conexionbd/vista/VentanaConexion.java,12,public class VentanaConexion extends JFrame implements ActionListener {
+src/conexionbd/vista/VentanaConexion.java,13,
+src/conexionbd/vista/VentanaConexion.java,14,    // --- Componentes ---
+src/conexionbd/vista/VentanaConexion.java,15,    private JTextField txtUrl;
+src/conexionbd/vista/VentanaConexion.java,16,    private JTextField txtUsuario;
+src/conexionbd/vista/VentanaConexion.java,17,    private JPasswordField txtContrasena;
+src/conexionbd/vista/VentanaConexion.java,18,    private JButton btnProbar;
+src/conexionbd/vista/VentanaConexion.java,19,    private JButton btnLimpiar;
+src/conexionbd/vista/VentanaConexion.java,20,    private JLabel lblEstado;
+src/conexionbd/vista/VentanaConexion.java,21,    private JTextArea areaResultados;
+src/conexionbd/vista/VentanaConexion.java,22,
+src/conexionbd/vista/VentanaConexion.java,23,    // Controlador al que la vista le pide probar la conexión (patrón MVC)
+src/conexionbd/vista/VentanaConexion.java,24,    private ConexionController controller;
+src/conexionbd/vista/VentanaConexion.java,25,
+src/conexionbd/vista/VentanaConexion.java,26,    public VentanaConexion() {
+src/conexionbd/vista/VentanaConexion.java,27,        controller = new ConexionController();
+src/conexionbd/vista/VentanaConexion.java,28,        configurarVentana();
+src/conexionbd/vista/VentanaConexion.java,29,        inicializarComponentes();
+src/conexionbd/vista/VentanaConexion.java,30,    }
+src/conexionbd/vista/VentanaConexion.java,31,
+src/conexionbd/vista/VentanaConexion.java,32,    // 1. Configuración general de la ventana
+src/conexionbd/vista/VentanaConexion.java,33,    private void configurarVentana() {
+src/conexionbd/vista/VentanaConexion.java,34,"        setTitle(""EA3 - Probar conexión a la base de datos"");"
+src/conexionbd/vista/VentanaConexion.java,35,"        setSize(520, 450);"
+src/conexionbd/vista/VentanaConexion.java,36,        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+src/conexionbd/vista/VentanaConexion.java,37,        setLocationRelativeTo(null);          // Centra la ventana en la pantalla
+src/conexionbd/vista/VentanaConexion.java,38,"        setLayout(new BorderLayout(10, 10));  // BorderLayout para la ventana principal"
+src/conexionbd/vista/VentanaConexion.java,39,        // Margen de 10 píxeles alrededor de todo el contenido
+src/conexionbd/vista/VentanaConexion.java,40,"        ((JPanel) getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));"
+src/conexionbd/vista/VentanaConexion.java,41,    }
+src/conexionbd/vista/VentanaConexion.java,42,
+src/conexionbd/vista/VentanaConexion.java,43,    // 2. Creación y organización de los componentes
+src/conexionbd/vista/VentanaConexion.java,44,    private void inicializarComponentes() {
+src/conexionbd/vista/VentanaConexion.java,45,        // Norte: título
+src/conexionbd/vista/VentanaConexion.java,46,"        JLabel lblTitulo = new JLabel(""Configuración de la base de datos"", SwingConstants.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,47,"        lblTitulo.setFont(new Font(""Arial"", Font.BOLD, 16));"
+src/conexionbd/vista/VentanaConexion.java,48,"        add(lblTitulo, BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,49,
+src/conexionbd/vista/VentanaConexion.java,50,        // Formulario: las etiquetas a la izquierda (WEST) y los campos en el centro (CENTER).
+src/conexionbd/vista/VentanaConexion.java,51,        // Cada columna usa GridLayout de 3 filas para que queden alineadas.
+src/conexionbd/vista/VentanaConexion.java,52,"        JPanel panelFormulario = new JPanel(new BorderLayout(10, 0));"
+src/conexionbd/vista/VentanaConexion.java,53,"        panelFormulario.setBorder(BorderFactory.createTitledBorder(""Datos de conexión""));"
+src/conexionbd/vista/VentanaConexion.java,54,"        JPanel panelEtiquetas = new JPanel(new GridLayout(3, 1, 5, 5));"
+src/conexionbd/vista/VentanaConexion.java,55,"        JPanel panelCampos = new JPanel(new GridLayout(3, 1, 5, 5));"
+src/conexionbd/vista/VentanaConexion.java,56,
+src/conexionbd/vista/VentanaConexion.java,57,"        panelEtiquetas.add(new JLabel(""URL JDBC:""));"
+src/conexionbd/vista/VentanaConexion.java,58,"        txtUrl = new JTextField(""jdbc:mysql://localhost:3306/iud_academico"");"
+src/conexionbd/vista/VentanaConexion.java,59,        panelCampos.add(txtUrl);
+src/conexionbd/vista/VentanaConexion.java,60,
+src/conexionbd/vista/VentanaConexion.java,61,"        panelEtiquetas.add(new JLabel(""Usuario:""));"
+src/conexionbd/vista/VentanaConexion.java,62,"        txtUsuario = new JTextField(""root"");"
+src/conexionbd/vista/VentanaConexion.java,63,        panelCampos.add(txtUsuario);
+src/conexionbd/vista/VentanaConexion.java,64,
+src/conexionbd/vista/VentanaConexion.java,65,"        panelEtiquetas.add(new JLabel(""Contraseña:""));"
+src/conexionbd/vista/VentanaConexion.java,66,        txtContrasena = new JPasswordField();
+src/conexionbd/vista/VentanaConexion.java,67,        panelCampos.add(txtContrasena);
+src/conexionbd/vista/VentanaConexion.java,68,
+src/conexionbd/vista/VentanaConexion.java,69,"        panelFormulario.add(panelEtiquetas, BorderLayout.WEST);"
+src/conexionbd/vista/VentanaConexion.java,70,"        panelFormulario.add(panelCampos, BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,71,
+src/conexionbd/vista/VentanaConexion.java,72,        // Resultados: etiqueta de estado y JTextArea con barra de desplazamiento
+src/conexionbd/vista/VentanaConexion.java,73,"        JPanel panelResultados = new JPanel(new BorderLayout(5, 5));"
+src/conexionbd/vista/VentanaConexion.java,74,"        panelResultados.setBorder(BorderFactory.createTitledBorder(""Resultados""));"
+src/conexionbd/vista/VentanaConexion.java,75,"        lblEstado = new JLabel(""Esperando prueba de conexión..."");"
+src/conexionbd/vista/VentanaConexion.java,76,"        lblEstado.setFont(new Font(""Arial"", Font.BOLD, 13));"
+src/conexionbd/vista/VentanaConexion.java,77,        areaResultados = new JTextArea();
+src/conexionbd/vista/VentanaConexion.java,78,        areaResultados.setEditable(false);
+src/conexionbd/vista/VentanaConexion.java,79,        areaResultados.setLineWrap(true);
+src/conexionbd/vista/VentanaConexion.java,80,        areaResultados.setWrapStyleWord(true);
+src/conexionbd/vista/VentanaConexion.java,81,"        panelResultados.add(lblEstado, BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,82,"        panelResultados.add(new JScrollPane(areaResultados), BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,83,
+src/conexionbd/vista/VentanaConexion.java,84,        // Centro: formulario arriba y resultados abajo
+src/conexionbd/vista/VentanaConexion.java,85,"        JPanel panelCentro = new JPanel(new BorderLayout(10, 10));"
+src/conexionbd/vista/VentanaConexion.java,86,"        panelCentro.add(panelFormulario, BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,87,"        panelCentro.add(panelResultados, BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,88,"        add(panelCentro, BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,89,
+src/conexionbd/vista/VentanaConexion.java,90,        // Sur: botones con FlowLayout
+src/conexionbd/vista/VentanaConexion.java,91,        JPanel panelBotones = new JPanel(new FlowLayout());
+src/conexionbd/vista/VentanaConexion.java,92,"        btnProbar = new JButton(""Probar conexión"");"
+src/conexionbd/vista/VentanaConexion.java,93,"        btnLimpiar = new JButton(""Limpiar"");"
+src/conexionbd/vista/VentanaConexion.java,94,        btnProbar.addActionListener(this);    // La misma ventana escucha los clics
+src/conexionbd/vista/VentanaConexion.java,95,        btnLimpiar.addActionListener(this);
+src/conexionbd/vista/VentanaConexion.java,96,        panelBotones.add(btnProbar);
+src/conexionbd/vista/VentanaConexion.java,97,        panelBotones.add(btnLimpiar);
+src/conexionbd/vista/VentanaConexion.java,98,"        add(panelBotones, BorderLayout.SOUTH);"
+src/conexionbd/vista/VentanaConexion.java,99,    }
+src/conexionbd/vista/VentanaConexion.java,100,
+src/conexionbd/vista/VentanaConexion.java,101,    // 3. Manejador de eventos: se ejecuta cuando se hace clic en un botón
+src/conexionbd/vista/VentanaConexion.java,102,    @Override
+src/conexionbd/vista/VentanaConexion.java,103,    public void actionPerformed(ActionEvent e) {
+src/conexionbd/vista/VentanaConexion.java,104,        if (e.getSource() == btnProbar) {
+src/conexionbd/vista/VentanaConexion.java,105,            probarConexion();
+src/conexionbd/vista/VentanaConexion.java,106,        } else if (e.getSource() == btnLimpiar) {
+src/conexionbd/vista/VentanaConexion.java,107,"            areaResultados.setText("""");"
+src/conexionbd/vista/VentanaConexion.java,108,"            lblEstado.setText(""Esperando prueba de conexión..."");"
+src/conexionbd/vista/VentanaConexion.java,109,            lblEstado.setForeground(Color.BLACK);
+src/conexionbd/vista/VentanaConexion.java,110,        }
+src/conexionbd/vista/VentanaConexion.java,111,    }
+src/conexionbd/vista/VentanaConexion.java,112,
+src/conexionbd/vista/VentanaConexion.java,113,"    // 4. Lee los campos, se los pasa al controlador y muestra el resultado o el error"
+src/conexionbd/vista/VentanaConexion.java,114,    private void probarConexion() {
+src/conexionbd/vista/VentanaConexion.java,115,        // Se toman los datos que escribió el usuario
+src/conexionbd/vista/VentanaConexion.java,116,        String url = txtUrl.getText().trim();
+src/conexionbd/vista/VentanaConexion.java,117,        String usuario = txtUsuario.getText().trim();
+src/conexionbd/vista/VentanaConexion.java,118,        String contrasena = new String(txtContrasena.getPassword());
+src/conexionbd/vista/VentanaConexion.java,119,
+src/conexionbd/vista/VentanaConexion.java,120,        try {
+src/conexionbd/vista/VentanaConexion.java,121,"            String mensaje = controller.probarConexion(url, usuario, contrasena);"
+src/conexionbd/vista/VentanaConexion.java,122,"            mostrarResultado(true, mensaje);"
+src/conexionbd/vista/VentanaConexion.java,123,
+src/conexionbd/vista/VentanaConexion.java,124,        } catch (IllegalArgumentException ex) {
+src/conexionbd/vista/VentanaConexion.java,125,            // El controlador encontró datos vacíos
+src/conexionbd/vista/VentanaConexion.java,126,"            JOptionPane.showMessageDialog(this, ex.getMessage(),"
+src/conexionbd/vista/VentanaConexion.java,127,"                    ""Datos incompletos"", JOptionPane.WARNING_MESSAGE);"
+src/conexionbd/vista/VentanaConexion.java,128,
+src/conexionbd/vista/VentanaConexion.java,129,        } catch (ClassNotFoundException ex) {
+src/conexionbd/vista/VentanaConexion.java,130,            // Falta el .jar del driver en el proyecto
+src/conexionbd/vista/VentanaConexion.java,131,"            mostrarResultado(false, ""No se encontró el driver JDBC: "" + ex.getMessage()"
+src/conexionbd/vista/VentanaConexion.java,132,"                    + ""\nAgregue el archivo mysql-connector-j-8.4.0.jar al proyecto (carpeta lib)."");"
+src/conexionbd/vista/VentanaConexion.java,133,
+src/conexionbd/vista/VentanaConexion.java,134,        } catch (SQLException ex) {
+src/conexionbd/vista/VentanaConexion.java,135,"            // Error de JDBC: servidor apagado, base de datos inexistente, clave incorrecta..."
+src/conexionbd/vista/VentanaConexion.java,136,"            mostrarResultado(false, ""Error de JDBC: "" + ex.getMessage()"
+src/conexionbd/vista/VentanaConexion.java,137,"                    + ""\nSQLState: "" + ex.getSQLState()"
+src/conexionbd/vista/VentanaConexion.java,138,"                    + ""\nCódigo de error: "" + ex.getErrorCode());"
+src/conexionbd/vista/VentanaConexion.java,139,        }
+src/conexionbd/vista/VentanaConexion.java,140,    }
+src/conexionbd/vista/VentanaConexion.java,141,
+src/conexionbd/vista/VentanaConexion.java,142,    // 5. Muestra el mensaje en el JTextArea y cambia el color del estado
+src/conexionbd/vista/VentanaConexion.java,143,"    private void mostrarResultado(boolean exitoso, String mensaje) {"
+src/conexionbd/vista/VentanaConexion.java,144,        if (exitoso) {
+src/conexionbd/vista/VentanaConexion.java,145,"            lblEstado.setText(""Conexión exitosa"");"
+src/conexionbd/vista/VentanaConexion.java,146,"            lblEstado.setForeground(new Color(0, 128, 0));   // Verde"
+src/conexionbd/vista/VentanaConexion.java,147,        } else {
+src/conexionbd/vista/VentanaConexion.java,148,"            lblEstado.setText(""No fue posible conectar"");"
+src/conexionbd/vista/VentanaConexion.java,149,            lblEstado.setForeground(Color.RED);
+src/conexionbd/vista/VentanaConexion.java,150,        }
+src/conexionbd/vista/VentanaConexion.java,151,"        areaResultados.append(mensaje + ""\n\n"");"
+src/conexionbd/vista/VentanaConexion.java,152,    }
+src/conexionbd/vista/VentanaConexion.java,153,}
+src/conexionbd/controlador/ConexionController.java,1,package conexionbd.controlador;
+src/conexionbd/controlador/ConexionController.java,2,
+src/conexionbd/controlador/ConexionController.java,3,import conexionbd.datos.ConexionBD;
+src/conexionbd/controlador/ConexionController.java,4,
+src/conexionbd/controlador/ConexionController.java,5,import java.sql.SQLException;
+src/conexionbd/controlador/ConexionController.java,6,
+src/conexionbd/controlador/ConexionController.java,7,"// Controlador: recibe la petición de la vista, valida los datos"
+src/conexionbd/controlador/ConexionController.java,8,public class ConexionController {
+src/conexionbd/controlador/ConexionController.java,9,
+src/conexionbd/controlador/ConexionController.java,10,    private ConexionBD conexionBD;
+src/conexionbd/controlador/ConexionController.java,11,
+src/conexionbd/controlador/ConexionController.java,12,    public ConexionController() {
+src/conexionbd/controlador/ConexionController.java,13,        conexionBD = new ConexionBD();
+src/conexionbd/controlador/ConexionController.java,14,    }
+src/conexionbd/controlador/ConexionController.java,15,
+src/conexionbd/controlador/ConexionController.java,16,    // Valida los datos del formulario y prueba la conexión
+src/conexionbd/controlador/ConexionController.java,17,"    public String probarConexion(String url, String usuario, String contrasena)"
+src/conexionbd/controlador/ConexionController.java,18,"            throws ClassNotFoundException, SQLException {"
+src/conexionbd/controlador/ConexionController.java,19,
+src/conexionbd/controlador/ConexionController.java,20,        // 1. Validar que los datos obligatorios no estén vacíos
+src/conexionbd/controlador/ConexionController.java,21,        if (url.isEmpty() || usuario.isEmpty()) {
+src/conexionbd/controlador/ConexionController.java,22,"            throw new IllegalArgumentException(""La URL y el usuario son obligatorios."");"
+src/conexionbd/controlador/ConexionController.java,23,        }
+src/conexionbd/controlador/ConexionController.java,24,
+src/conexionbd/controlador/ConexionController.java,25,        // 2. Pedirle a la capa de datos que se conecte
+src/conexionbd/controlador/ConexionController.java,26,"        return conexionBD.probarConexion(url, usuario, contrasena);"
+src/conexionbd/controlador/ConexionController.java,27,    }
+src/conexionbd/controlador/ConexionController.java,28,}
+src/conexionbd/datos/ConexionBD.java,1,package conexionbd.datos;
+src/conexionbd/datos/ConexionBD.java,2,
+src/conexionbd/datos/ConexionBD.java,3,import java.sql.Connection;
+src/conexionbd/datos/ConexionBD.java,4,import java.sql.DriverManager;
+src/conexionbd/datos/ConexionBD.java,5,import java.sql.SQLException;
+src/conexionbd/datos/ConexionBD.java,6,
+src/conexionbd/datos/ConexionBD.java,7,// Capa de datos: clase que se encarga SOLO de la conexión a la base de datos.
+src/conexionbd/datos/ConexionBD.java,8,public class ConexionBD {
+src/conexionbd/datos/ConexionBD.java,9,
+src/conexionbd/datos/ConexionBD.java,10,    // --- 1. Constante con el driver de MySQL ---
+src/conexionbd/datos/ConexionBD.java,11,"    private static final String DRIVER = ""com.mysql.cj.jdbc.Driver"";"
+src/conexionbd/datos/ConexionBD.java,12,
+src/conexionbd/datos/ConexionBD.java,13,    // --- 2. Método que prueba la conexión ---
+src/conexionbd/datos/ConexionBD.java,14,"    // Recibe la URL, el usuario y la contraseña que se escribieron en la ventana."
+src/conexionbd/datos/ConexionBD.java,15,"    // Si algo falla, lanza la excepción para que la ventana la muestre."
+src/conexionbd/datos/ConexionBD.java,16,"    public String probarConexion(String url, String usuario, String contrasena)"
+src/conexionbd/datos/ConexionBD.java,17,"            throws ClassNotFoundException, SQLException {"
+src/conexionbd/datos/ConexionBD.java,18,
+src/conexionbd/datos/ConexionBD.java,19,"        // Paso 1: cargar el driver JDBC (si no está el .jar, lanza ClassNotFoundException)"
+src/conexionbd/datos/ConexionBD.java,20,        Class.forName(DRIVER);
+src/conexionbd/datos/ConexionBD.java,21,
+src/conexionbd/datos/ConexionBD.java,22,        // Paso 2: abrir la conexión con DriverManager dentro de un try-with-resources.
+src/conexionbd/datos/ConexionBD.java,23,"        // Al terminar el bloque, la conexión se cierra sola, aunque ocurra un error."
+src/conexionbd/datos/ConexionBD.java,24,"        try (Connection conexion = DriverManager.getConnection(url, usuario, contrasena)) {"
+src/conexionbd/datos/ConexionBD.java,25,
+src/conexionbd/datos/ConexionBD.java,26,"            // Paso 3: si llegamos aquí, la conexión fue exitosa"
+src/conexionbd/datos/ConexionBD.java,27,"            return ""Conexión exitosa a la base de datos: "" + conexion.getCatalog()"
+src/conexionbd/datos/ConexionBD.java,28,"                    + ""\nMotor: "" + conexion.getMetaData().getDatabaseProductName()"
+src/conexionbd/datos/ConexionBD.java,29,"                    + "" "" + conexion.getMetaData().getDatabaseProductVersion();"
+src/conexionbd/datos/ConexionBD.java,30,        }
+src/conexionbd/datos/ConexionBD.java,31,    }
+src/conexionbd/datos/ConexionBD.java,32,}
