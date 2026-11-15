@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 // La clase principal extiende JFrame para ser la ventana
-// e implementa ActionListener para atender los clics de los botones.
 public class VentanaConexion extends JFrame implements ActionListener {
 
     // --- Componentes ---
@@ -24,7 +23,6 @@ public class VentanaConexion extends JFrame implements ActionListener {
     // Controlador al que la vista le pide probar la conexión (patrón MVC)
     private ConexionController controller;
 
-    // Constructor de la clase
     public VentanaConexion() {
         controller = new ConexionController();
         configurarVentana();

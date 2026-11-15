@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 // Capa de datos: clase que se encarga SOLO de la conexión a la base de datos.
-// La ventana no sabe nada de JDBC: el controlador le pasa los datos a esta clase.
 public class ConexionBD {
 
     // --- 1. Constante con el driver de MySQL ---

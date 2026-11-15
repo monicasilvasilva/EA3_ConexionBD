@@ -5,7 +5,6 @@ import conexionbd.datos.ConexionBD;
 import java.sql.SQLException;
 
 // Controlador: recibe la petición de la vista, valida los datos
-// y le pide a la capa de datos que haga la conexión.
 public class ConexionController {
 
     private ConexionBD conexionBD;
