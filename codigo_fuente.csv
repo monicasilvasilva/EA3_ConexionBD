@@ -1,0 +1,540 @@
+﻿archivo,linea,codigo
+src/conexionbd/Main.java,1,package conexionbd;
+src/conexionbd/Main.java,2,
+src/conexionbd/Main.java,3,import conexionbd.servicio.ServicioConexion;
+src/conexionbd/Main.java,4,import conexionbd.vista.VentanaConexion;
+src/conexionbd/Main.java,5,
+src/conexionbd/Main.java,6,import javax.swing.SwingUtilities;
+src/conexionbd/Main.java,7,
+src/conexionbd/Main.java,8,"/** Punto de entrada: crea el servicio, se lo entrega a la ventana y la muestra. */"
+src/conexionbd/Main.java,9,public class Main {
+src/conexionbd/Main.java,10,
+src/conexionbd/Main.java,11,    public static void main(String[] args) {
+src/conexionbd/Main.java,12,        SwingUtilities.invokeLater(() -> {
+src/conexionbd/Main.java,13,            VentanaConexion ventana = new VentanaConexion(new ServicioConexion());
+src/conexionbd/Main.java,14,            ventana.setVisible(true);
+src/conexionbd/Main.java,15,        });
+src/conexionbd/Main.java,16,    }
+src/conexionbd/Main.java,17,}
+src/conexionbd/modelo/MotorBaseDatos.java,1,package conexionbd.modelo;
+src/conexionbd/modelo/MotorBaseDatos.java,2,
+src/conexionbd/modelo/MotorBaseDatos.java,3,/**
+src/conexionbd/modelo/MotorBaseDatos.java,4, * Motores de base de datos que soporta la aplicación.
+src/conexionbd/modelo/MotorBaseDatos.java,5," * Cada motor conoce la clase de su driver JDBC, su puerto por defecto"
+src/conexionbd/modelo/MotorBaseDatos.java,6, * y la plantilla de la URL de conexión.
+src/conexionbd/modelo/MotorBaseDatos.java,7, */
+src/conexionbd/modelo/MotorBaseDatos.java,8,public enum MotorBaseDatos {
+src/conexionbd/modelo/MotorBaseDatos.java,9,
+src/conexionbd/modelo/MotorBaseDatos.java,10,"    MYSQL(""MySQL / MariaDB"", ""com.mysql.cj.jdbc.Driver"", 3306,"
+src/conexionbd/modelo/MotorBaseDatos.java,11,"            ""jdbc:mysql://%s:%d/%s""),"
+src/conexionbd/modelo/MotorBaseDatos.java,12,"    POSTGRESQL(""PostgreSQL"", ""org.postgresql.Driver"", 5432,"
+src/conexionbd/modelo/MotorBaseDatos.java,13,"            ""jdbc:postgresql://%s:%d/%s""),"
+src/conexionbd/modelo/MotorBaseDatos.java,14,"    SQL_SERVER(""SQL Server"", ""com.microsoft.sqlserver.jdbc.SQLServerDriver"", 1433,"
+src/conexionbd/modelo/MotorBaseDatos.java,15,"            ""jdbc:sqlserver://%s:%d;databaseName=%s;encrypt=false"");"
+src/conexionbd/modelo/MotorBaseDatos.java,16,
+src/conexionbd/modelo/MotorBaseDatos.java,17,    private final String nombreVisible;
+src/conexionbd/modelo/MotorBaseDatos.java,18,    private final String claseDriver;
+src/conexionbd/modelo/MotorBaseDatos.java,19,    private final int puertoPorDefecto;
+src/conexionbd/modelo/MotorBaseDatos.java,20,    private final String plantillaUrl;
+src/conexionbd/modelo/MotorBaseDatos.java,21,
+src/conexionbd/modelo/MotorBaseDatos.java,22,"    MotorBaseDatos(String nombreVisible, String claseDriver, int puertoPorDefecto, String plantillaUrl) {"
+src/conexionbd/modelo/MotorBaseDatos.java,23,        this.nombreVisible = nombreVisible;
+src/conexionbd/modelo/MotorBaseDatos.java,24,        this.claseDriver = claseDriver;
+src/conexionbd/modelo/MotorBaseDatos.java,25,        this.puertoPorDefecto = puertoPorDefecto;
+src/conexionbd/modelo/MotorBaseDatos.java,26,        this.plantillaUrl = plantillaUrl;
+src/conexionbd/modelo/MotorBaseDatos.java,27,    }
+src/conexionbd/modelo/MotorBaseDatos.java,28,
+src/conexionbd/modelo/MotorBaseDatos.java,29,    public String getClaseDriver() {
+src/conexionbd/modelo/MotorBaseDatos.java,30,        return claseDriver;
+src/conexionbd/modelo/MotorBaseDatos.java,31,    }
+src/conexionbd/modelo/MotorBaseDatos.java,32,
+src/conexionbd/modelo/MotorBaseDatos.java,33,    public int getPuertoPorDefecto() {
+src/conexionbd/modelo/MotorBaseDatos.java,34,        return puertoPorDefecto;
+src/conexionbd/modelo/MotorBaseDatos.java,35,    }
+src/conexionbd/modelo/MotorBaseDatos.java,36,
+src/conexionbd/modelo/MotorBaseDatos.java,37,    /** Arma la URL JDBC con los datos que escribió el usuario. */
+src/conexionbd/modelo/MotorBaseDatos.java,38,"    public String construirUrl(String servidor, int puerto, String baseDatos) {"
+src/conexionbd/modelo/MotorBaseDatos.java,39,"        return String.format(plantillaUrl, servidor, puerto, baseDatos);"
+src/conexionbd/modelo/MotorBaseDatos.java,40,    }
+src/conexionbd/modelo/MotorBaseDatos.java,41,
+src/conexionbd/modelo/MotorBaseDatos.java,42,    @Override
+src/conexionbd/modelo/MotorBaseDatos.java,43,    public String toString() {
+src/conexionbd/modelo/MotorBaseDatos.java,44,        return nombreVisible;
+src/conexionbd/modelo/MotorBaseDatos.java,45,    }
+src/conexionbd/modelo/MotorBaseDatos.java,46,}
+src/conexionbd/modelo/ConfiguracionConexion.java,1,package conexionbd.modelo;
+src/conexionbd/modelo/ConfiguracionConexion.java,2,
+src/conexionbd/modelo/ConfiguracionConexion.java,3,/**
+src/conexionbd/modelo/ConfiguracionConexion.java,4, * Datos de configuración que el usuario ingresa en la ventana.
+src/conexionbd/modelo/ConfiguracionConexion.java,5," * Es una clase de modelo: solo guarda y valida datos, no sabe nada de Swing ni de JDBC."
+src/conexionbd/modelo/ConfiguracionConexion.java,6, */
+src/conexionbd/modelo/ConfiguracionConexion.java,7,public class ConfiguracionConexion {
+src/conexionbd/modelo/ConfiguracionConexion.java,8,
+src/conexionbd/modelo/ConfiguracionConexion.java,9,    private final MotorBaseDatos motor;
+src/conexionbd/modelo/ConfiguracionConexion.java,10,    private final String servidor;
+src/conexionbd/modelo/ConfiguracionConexion.java,11,    private final int puerto;
+src/conexionbd/modelo/ConfiguracionConexion.java,12,    private final String baseDatos;
+src/conexionbd/modelo/ConfiguracionConexion.java,13,    private final String usuario;
+src/conexionbd/modelo/ConfiguracionConexion.java,14,    private final char[] contrasena;
+src/conexionbd/modelo/ConfiguracionConexion.java,15,
+src/conexionbd/modelo/ConfiguracionConexion.java,16,"    public ConfiguracionConexion(MotorBaseDatos motor, String servidor, int puerto,"
+src/conexionbd/modelo/ConfiguracionConexion.java,17,"                                 String baseDatos, String usuario, char[] contrasena) {"
+src/conexionbd/modelo/ConfiguracionConexion.java,18,        this.motor = motor;
+src/conexionbd/modelo/ConfiguracionConexion.java,19,        this.servidor = servidor;
+src/conexionbd/modelo/ConfiguracionConexion.java,20,        this.puerto = puerto;
+src/conexionbd/modelo/ConfiguracionConexion.java,21,        this.baseDatos = baseDatos;
+src/conexionbd/modelo/ConfiguracionConexion.java,22,        this.usuario = usuario;
+src/conexionbd/modelo/ConfiguracionConexion.java,23,        this.contrasena = contrasena;
+src/conexionbd/modelo/ConfiguracionConexion.java,24,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,25,
+src/conexionbd/modelo/ConfiguracionConexion.java,26,    public MotorBaseDatos getMotor() {
+src/conexionbd/modelo/ConfiguracionConexion.java,27,        return motor;
+src/conexionbd/modelo/ConfiguracionConexion.java,28,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,29,
+src/conexionbd/modelo/ConfiguracionConexion.java,30,    public String getServidor() {
+src/conexionbd/modelo/ConfiguracionConexion.java,31,        return servidor;
+src/conexionbd/modelo/ConfiguracionConexion.java,32,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,33,
+src/conexionbd/modelo/ConfiguracionConexion.java,34,    public int getPuerto() {
+src/conexionbd/modelo/ConfiguracionConexion.java,35,        return puerto;
+src/conexionbd/modelo/ConfiguracionConexion.java,36,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,37,
+src/conexionbd/modelo/ConfiguracionConexion.java,38,    public String getBaseDatos() {
+src/conexionbd/modelo/ConfiguracionConexion.java,39,        return baseDatos;
+src/conexionbd/modelo/ConfiguracionConexion.java,40,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,41,
+src/conexionbd/modelo/ConfiguracionConexion.java,42,    public String getUsuario() {
+src/conexionbd/modelo/ConfiguracionConexion.java,43,        return usuario;
+src/conexionbd/modelo/ConfiguracionConexion.java,44,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,45,
+src/conexionbd/modelo/ConfiguracionConexion.java,46,    public String getContrasena() {
+src/conexionbd/modelo/ConfiguracionConexion.java,47,        return new String(contrasena);
+src/conexionbd/modelo/ConfiguracionConexion.java,48,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,49,
+src/conexionbd/modelo/ConfiguracionConexion.java,50,    /** URL JDBC construida dinámicamente a partir de los campos del formulario. */
+src/conexionbd/modelo/ConfiguracionConexion.java,51,    public String getUrl() {
+src/conexionbd/modelo/ConfiguracionConexion.java,52,"        return motor.construirUrl(servidor, puerto, baseDatos);"
+src/conexionbd/modelo/ConfiguracionConexion.java,53,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,54,
+src/conexionbd/modelo/ConfiguracionConexion.java,55,    /**
+src/conexionbd/modelo/ConfiguracionConexion.java,56,     * Revisa que los datos obligatorios estén completos y que el puerto sea válido.
+src/conexionbd/modelo/ConfiguracionConexion.java,57,     *
+src/conexionbd/modelo/ConfiguracionConexion.java,58,     * @throws IllegalArgumentException si falta algún dato
+src/conexionbd/modelo/ConfiguracionConexion.java,59,     */
+src/conexionbd/modelo/ConfiguracionConexion.java,60,    public void validar() {
+src/conexionbd/modelo/ConfiguracionConexion.java,61,        if (servidor == null || servidor.isBlank()) {
+src/conexionbd/modelo/ConfiguracionConexion.java,62,"            throw new IllegalArgumentException(""El servidor (host) es obligatorio."");"
+src/conexionbd/modelo/ConfiguracionConexion.java,63,        }
+src/conexionbd/modelo/ConfiguracionConexion.java,64,        if (puerto < 1 || puerto > 65535) {
+src/conexionbd/modelo/ConfiguracionConexion.java,65,"            throw new IllegalArgumentException(""El puerto debe estar entre 1 y 65535."");"
+src/conexionbd/modelo/ConfiguracionConexion.java,66,        }
+src/conexionbd/modelo/ConfiguracionConexion.java,67,        if (baseDatos == null || baseDatos.isBlank()) {
+src/conexionbd/modelo/ConfiguracionConexion.java,68,"            throw new IllegalArgumentException(""El nombre de la base de datos es obligatorio."");"
+src/conexionbd/modelo/ConfiguracionConexion.java,69,        }
+src/conexionbd/modelo/ConfiguracionConexion.java,70,        if (usuario == null || usuario.isBlank()) {
+src/conexionbd/modelo/ConfiguracionConexion.java,71,"            throw new IllegalArgumentException(""El usuario es obligatorio."");"
+src/conexionbd/modelo/ConfiguracionConexion.java,72,        }
+src/conexionbd/modelo/ConfiguracionConexion.java,73,    }
+src/conexionbd/modelo/ConfiguracionConexion.java,74,}
+src/conexionbd/modelo/ResultadoConexion.java,1,package conexionbd.modelo;
+src/conexionbd/modelo/ResultadoConexion.java,2,
+src/conexionbd/modelo/ResultadoConexion.java,3,/**
+src/conexionbd/modelo/ResultadoConexion.java,4, * Resultado de un intento de conexión: si fue exitoso y el detalle para mostrar al usuario.
+src/conexionbd/modelo/ResultadoConexion.java,5, */
+src/conexionbd/modelo/ResultadoConexion.java,6,public class ResultadoConexion {
+src/conexionbd/modelo/ResultadoConexion.java,7,
+src/conexionbd/modelo/ResultadoConexion.java,8,    private final boolean exitoso;
+src/conexionbd/modelo/ResultadoConexion.java,9,    private final String detalle;
+src/conexionbd/modelo/ResultadoConexion.java,10,
+src/conexionbd/modelo/ResultadoConexion.java,11,"    private ResultadoConexion(boolean exitoso, String detalle) {"
+src/conexionbd/modelo/ResultadoConexion.java,12,        this.exitoso = exitoso;
+src/conexionbd/modelo/ResultadoConexion.java,13,        this.detalle = detalle;
+src/conexionbd/modelo/ResultadoConexion.java,14,    }
+src/conexionbd/modelo/ResultadoConexion.java,15,
+src/conexionbd/modelo/ResultadoConexion.java,16,    public static ResultadoConexion exito(String detalle) {
+src/conexionbd/modelo/ResultadoConexion.java,17,"        return new ResultadoConexion(true, detalle);"
+src/conexionbd/modelo/ResultadoConexion.java,18,    }
+src/conexionbd/modelo/ResultadoConexion.java,19,
+src/conexionbd/modelo/ResultadoConexion.java,20,    public static ResultadoConexion error(String detalle) {
+src/conexionbd/modelo/ResultadoConexion.java,21,"        return new ResultadoConexion(false, detalle);"
+src/conexionbd/modelo/ResultadoConexion.java,22,    }
+src/conexionbd/modelo/ResultadoConexion.java,23,
+src/conexionbd/modelo/ResultadoConexion.java,24,    public boolean isExitoso() {
+src/conexionbd/modelo/ResultadoConexion.java,25,        return exitoso;
+src/conexionbd/modelo/ResultadoConexion.java,26,    }
+src/conexionbd/modelo/ResultadoConexion.java,27,
+src/conexionbd/modelo/ResultadoConexion.java,28,    public String getDetalle() {
+src/conexionbd/modelo/ResultadoConexion.java,29,        return detalle;
+src/conexionbd/modelo/ResultadoConexion.java,30,    }
+src/conexionbd/modelo/ResultadoConexion.java,31,}
+src/conexionbd/servicio/ServicioConexion.java,1,package conexionbd.servicio;
+src/conexionbd/servicio/ServicioConexion.java,2,
+src/conexionbd/servicio/ServicioConexion.java,3,import conexionbd.modelo.ConfiguracionConexion;
+src/conexionbd/servicio/ServicioConexion.java,4,import conexionbd.modelo.ResultadoConexion;
+src/conexionbd/servicio/ServicioConexion.java,5,
+src/conexionbd/servicio/ServicioConexion.java,6,import java.sql.Connection;
+src/conexionbd/servicio/ServicioConexion.java,7,import java.sql.DatabaseMetaData;
+src/conexionbd/servicio/ServicioConexion.java,8,import java.sql.DriverManager;
+src/conexionbd/servicio/ServicioConexion.java,9,import java.sql.SQLException;
+src/conexionbd/servicio/ServicioConexion.java,10,
+src/conexionbd/servicio/ServicioConexion.java,11,/**
+src/conexionbd/servicio/ServicioConexion.java,12," * Lógica de conexión a la base de datos, separada de la interfaz gráfica."
+src/conexionbd/servicio/ServicioConexion.java,13," * Carga el driver, abre la conexión con DriverManager.getConnection() dentro de un"
+src/conexionbd/servicio/ServicioConexion.java,14, * try-with-resources (la conexión se cierra sola) y traduce los errores JDBC
+src/conexionbd/servicio/ServicioConexion.java,15, * a un mensaje entendible.
+src/conexionbd/servicio/ServicioConexion.java,16, */
+src/conexionbd/servicio/ServicioConexion.java,17,public class ServicioConexion {
+src/conexionbd/servicio/ServicioConexion.java,18,
+src/conexionbd/servicio/ServicioConexion.java,19,    private static final int TIEMPO_ESPERA_SEGUNDOS = 5;
+src/conexionbd/servicio/ServicioConexion.java,20,
+src/conexionbd/servicio/ServicioConexion.java,21,    /**
+src/conexionbd/servicio/ServicioConexion.java,22,     * Intenta conectarse con la configuración recibida.
+src/conexionbd/servicio/ServicioConexion.java,23,     * Nunca lanza excepciones: siempre devuelve un ResultadoConexion.
+src/conexionbd/servicio/ServicioConexion.java,24,     */
+src/conexionbd/servicio/ServicioConexion.java,25,    public ResultadoConexion probarConexion(ConfiguracionConexion configuracion) {
+src/conexionbd/servicio/ServicioConexion.java,26,        try {
+src/conexionbd/servicio/ServicioConexion.java,27,            configuracion.validar();
+src/conexionbd/servicio/ServicioConexion.java,28,            cargarDriver(configuracion.getMotor().getClaseDriver());
+src/conexionbd/servicio/ServicioConexion.java,29,            DriverManager.setLoginTimeout(TIEMPO_ESPERA_SEGUNDOS);
+src/conexionbd/servicio/ServicioConexion.java,30,
+src/conexionbd/servicio/ServicioConexion.java,31,            try (Connection conexion = DriverManager.getConnection(
+src/conexionbd/servicio/ServicioConexion.java,32,"                    configuracion.getUrl(),"
+src/conexionbd/servicio/ServicioConexion.java,33,"                    configuracion.getUsuario(),"
+src/conexionbd/servicio/ServicioConexion.java,34,                    configuracion.getContrasena())) {
+src/conexionbd/servicio/ServicioConexion.java,35,"                return ResultadoConexion.exito(describirConexion(conexion, configuracion));"
+src/conexionbd/servicio/ServicioConexion.java,36,            }
+src/conexionbd/servicio/ServicioConexion.java,37,
+src/conexionbd/servicio/ServicioConexion.java,38,        } catch (IllegalArgumentException e) {
+src/conexionbd/servicio/ServicioConexion.java,39,"            return ResultadoConexion.error(""Datos incompletos: "" + e.getMessage());"
+src/conexionbd/servicio/ServicioConexion.java,40,        } catch (ClassNotFoundException e) {
+src/conexionbd/servicio/ServicioConexion.java,41,"            return ResultadoConexion.error(describirDriverFaltante(configuracion, e));"
+src/conexionbd/servicio/ServicioConexion.java,42,        } catch (SQLException e) {
+src/conexionbd/servicio/ServicioConexion.java,43,"            return ResultadoConexion.error(describirErrorSql(configuracion, e));"
+src/conexionbd/servicio/ServicioConexion.java,44,        }
+src/conexionbd/servicio/ServicioConexion.java,45,    }
+src/conexionbd/servicio/ServicioConexion.java,46,
+src/conexionbd/servicio/ServicioConexion.java,47,    /** Carga explícitamente la clase del driver JDBC. */
+src/conexionbd/servicio/ServicioConexion.java,48,    private void cargarDriver(String claseDriver) throws ClassNotFoundException {
+src/conexionbd/servicio/ServicioConexion.java,49,        Class.forName(claseDriver);
+src/conexionbd/servicio/ServicioConexion.java,50,    }
+src/conexionbd/servicio/ServicioConexion.java,51,
+src/conexionbd/servicio/ServicioConexion.java,52,"    private String describirConexion(Connection conexion, ConfiguracionConexion configuracion)"
+src/conexionbd/servicio/ServicioConexion.java,53,            throws SQLException {
+src/conexionbd/servicio/ServicioConexion.java,54,        DatabaseMetaData metadatos = conexion.getMetaData();
+src/conexionbd/servicio/ServicioConexion.java,55,"        return ""CONEXIÓN EXITOSA\n"""
+src/conexionbd/servicio/ServicioConexion.java,56,"                + ""URL: "" + configuracion.getUrl() + ""\n"""
+src/conexionbd/servicio/ServicioConexion.java,57,"                + ""Usuario: "" + metadatos.getUserName() + ""\n"""
+src/conexionbd/servicio/ServicioConexion.java,58,"                + ""Motor: "" + metadatos.getDatabaseProductName() + "" """
+src/conexionbd/servicio/ServicioConexion.java,59,"                + metadatos.getDatabaseProductVersion() + ""\n"""
+src/conexionbd/servicio/ServicioConexion.java,60,"                + ""Driver: "" + metadatos.getDriverName() + "" "" + metadatos.getDriverVersion() + ""\n"""
+src/conexionbd/servicio/ServicioConexion.java,61,"                + ""La conexión se cerró automáticamente (try-with-resources)."";"
+src/conexionbd/servicio/ServicioConexion.java,62,    }
+src/conexionbd/servicio/ServicioConexion.java,63,
+src/conexionbd/servicio/ServicioConexion.java,64,"    private String describirDriverFaltante(ConfiguracionConexion configuracion,"
+src/conexionbd/servicio/ServicioConexion.java,65,                                           ClassNotFoundException e) {
+src/conexionbd/servicio/ServicioConexion.java,66,"        return ""ERROR: no se encontró el driver JDBC.\n"""
+src/conexionbd/servicio/ServicioConexion.java,67,"                + ""Clase buscada: "" + e.getMessage() + ""\n"""
+src/conexionbd/servicio/ServicioConexion.java,68,"                + ""Solución: agregue el .jar del driver de """
+src/conexionbd/servicio/ServicioConexion.java,69,"                + configuracion.getMotor() + "" a la carpeta lib/ (classpath)."";"
+src/conexionbd/servicio/ServicioConexion.java,70,    }
+src/conexionbd/servicio/ServicioConexion.java,71,
+src/conexionbd/servicio/ServicioConexion.java,72,"    /** Recorre la cadena de SQLException y muestra mensaje, SQLState y código de error. */"
+src/conexionbd/servicio/ServicioConexion.java,73,"    private String describirErrorSql(ConfiguracionConexion configuracion, SQLException e) {"
+src/conexionbd/servicio/ServicioConexion.java,74,"        StringBuilder detalle = new StringBuilder(""ERROR JDBC al conectar a "")"
+src/conexionbd/servicio/ServicioConexion.java,75,"                .append(configuracion.getUrl()).append(""\n"");"
+src/conexionbd/servicio/ServicioConexion.java,76,        SQLException actual = e;
+src/conexionbd/servicio/ServicioConexion.java,77,        int numero = 1;
+src/conexionbd/servicio/ServicioConexion.java,78,        while (actual != null) {
+src/conexionbd/servicio/ServicioConexion.java,79,"            detalle.append(""["").append(numero++).append(""] "")"
+src/conexionbd/servicio/ServicioConexion.java,80,"                    .append(actual.getClass().getSimpleName()).append(""\n"")"
+src/conexionbd/servicio/ServicioConexion.java,81,"                    .append(""   Mensaje: "").append(actual.getMessage()).append(""\n"")"
+src/conexionbd/servicio/ServicioConexion.java,82,"                    .append(""   SQLState: "").append(actual.getSQLState()).append(""\n"")"
+src/conexionbd/servicio/ServicioConexion.java,83,"                    .append(""   Código de error: "").append(actual.getErrorCode()).append(""\n"");"
+src/conexionbd/servicio/ServicioConexion.java,84,            actual = actual.getNextException();
+src/conexionbd/servicio/ServicioConexion.java,85,        }
+src/conexionbd/servicio/ServicioConexion.java,86,"        detalle.append(""Posible causa: "").append(sugerirCausa(e.getSQLState()));"
+src/conexionbd/servicio/ServicioConexion.java,87,        return detalle.toString();
+src/conexionbd/servicio/ServicioConexion.java,88,    }
+src/conexionbd/servicio/ServicioConexion.java,89,
+src/conexionbd/servicio/ServicioConexion.java,90,    /** Traduce las clases de SQLState más comunes a una sugerencia para el usuario. */
+src/conexionbd/servicio/ServicioConexion.java,91,    private String sugerirCausa(String sqlState) {
+src/conexionbd/servicio/ServicioConexion.java,92,        if (sqlState == null) {
+src/conexionbd/servicio/ServicioConexion.java,93,"            return ""revise la URL, el servidor y que el driver corresponda al motor."";"
+src/conexionbd/servicio/ServicioConexion.java,94,        }
+src/conexionbd/servicio/ServicioConexion.java,95,"        if (sqlState.startsWith(""08"")) {"
+src/conexionbd/servicio/ServicioConexion.java,96,"            return ""no hay comunicación con el servidor (¿está encendido? ¿host y puerto correctos?)."";"
+src/conexionbd/servicio/ServicioConexion.java,97,        }
+src/conexionbd/servicio/ServicioConexion.java,98,"        if (sqlState.startsWith(""28"")) {"
+src/conexionbd/servicio/ServicioConexion.java,99,"            return ""usuario o contraseña incorrectos."";"
+src/conexionbd/servicio/ServicioConexion.java,100,        }
+src/conexionbd/servicio/ServicioConexion.java,101,"        if (sqlState.startsWith(""3D"") || sqlState.equals(""42000"")) {"
+src/conexionbd/servicio/ServicioConexion.java,102,"            return ""la base de datos no existe o el usuario no tiene permiso sobre ella."";"
+src/conexionbd/servicio/ServicioConexion.java,103,        }
+src/conexionbd/servicio/ServicioConexion.java,104,"        return ""consulte el mensaje y el SQLState anteriores."";"
+src/conexionbd/servicio/ServicioConexion.java,105,    }
+src/conexionbd/servicio/ServicioConexion.java,106,}
+src/conexionbd/vista/VentanaConexion.java,1,package conexionbd.vista;
+src/conexionbd/vista/VentanaConexion.java,2,
+src/conexionbd/vista/VentanaConexion.java,3,import conexionbd.modelo.ConfiguracionConexion;
+src/conexionbd/vista/VentanaConexion.java,4,import conexionbd.modelo.MotorBaseDatos;
+src/conexionbd/vista/VentanaConexion.java,5,import conexionbd.modelo.ResultadoConexion;
+src/conexionbd/vista/VentanaConexion.java,6,import conexionbd.servicio.ServicioConexion;
+src/conexionbd/vista/VentanaConexion.java,7,
+src/conexionbd/vista/VentanaConexion.java,8,import javax.swing.BorderFactory;
+src/conexionbd/vista/VentanaConexion.java,9,import javax.swing.JButton;
+src/conexionbd/vista/VentanaConexion.java,10,import javax.swing.JComboBox;
+src/conexionbd/vista/VentanaConexion.java,11,import javax.swing.JFrame;
+src/conexionbd/vista/VentanaConexion.java,12,import javax.swing.JLabel;
+src/conexionbd/vista/VentanaConexion.java,13,import javax.swing.JOptionPane;
+src/conexionbd/vista/VentanaConexion.java,14,import javax.swing.JPanel;
+src/conexionbd/vista/VentanaConexion.java,15,import javax.swing.JPasswordField;
+src/conexionbd/vista/VentanaConexion.java,16,import javax.swing.JScrollPane;
+src/conexionbd/vista/VentanaConexion.java,17,import javax.swing.JTextArea;
+src/conexionbd/vista/VentanaConexion.java,18,import javax.swing.JTextField;
+src/conexionbd/vista/VentanaConexion.java,19,import javax.swing.SwingConstants;
+src/conexionbd/vista/VentanaConexion.java,20,import javax.swing.SwingWorker;
+src/conexionbd/vista/VentanaConexion.java,21,import java.awt.BorderLayout;
+src/conexionbd/vista/VentanaConexion.java,22,import java.awt.Color;
+src/conexionbd/vista/VentanaConexion.java,23,import java.awt.FlowLayout;
+src/conexionbd/vista/VentanaConexion.java,24,import java.awt.Font;
+src/conexionbd/vista/VentanaConexion.java,25,import java.awt.GridBagConstraints;
+src/conexionbd/vista/VentanaConexion.java,26,import java.awt.GridBagLayout;
+src/conexionbd/vista/VentanaConexion.java,27,import java.awt.Insets;
+src/conexionbd/vista/VentanaConexion.java,28,import java.time.LocalTime;
+src/conexionbd/vista/VentanaConexion.java,29,import java.time.format.DateTimeFormatter;
+src/conexionbd/vista/VentanaConexion.java,30,import java.util.concurrent.ExecutionException;
+src/conexionbd/vista/VentanaConexion.java,31,
+src/conexionbd/vista/VentanaConexion.java,32,/**
+src/conexionbd/vista/VentanaConexion.java,33," * Ventana principal (vista). Solo construye la interfaz, lee los campos y muestra"
+src/conexionbd/vista/VentanaConexion.java,34, * resultados; la conexión la hace ServicioConexion.
+src/conexionbd/vista/VentanaConexion.java,35, */
+src/conexionbd/vista/VentanaConexion.java,36,public class VentanaConexion extends JFrame {
+src/conexionbd/vista/VentanaConexion.java,37,
+src/conexionbd/vista/VentanaConexion.java,38,"    private static final Color COLOR_EXITO = new Color(0, 128, 0);"
+src/conexionbd/vista/VentanaConexion.java,39,"    private static final Color COLOR_ERROR = new Color(180, 0, 0);"
+src/conexionbd/vista/VentanaConexion.java,40,"    private static final DateTimeFormatter FORMATO_HORA = DateTimeFormatter.ofPattern(""HH:mm:ss"");"
+src/conexionbd/vista/VentanaConexion.java,41,
+src/conexionbd/vista/VentanaConexion.java,42,    private final ServicioConexion servicioConexion;
+src/conexionbd/vista/VentanaConexion.java,43,
+src/conexionbd/vista/VentanaConexion.java,44,    private JComboBox<MotorBaseDatos> cmbMotor;
+src/conexionbd/vista/VentanaConexion.java,45,    private JTextField txtServidor;
+src/conexionbd/vista/VentanaConexion.java,46,    private JTextField txtPuerto;
+src/conexionbd/vista/VentanaConexion.java,47,    private JTextField txtBaseDatos;
+src/conexionbd/vista/VentanaConexion.java,48,    private JTextField txtUsuario;
+src/conexionbd/vista/VentanaConexion.java,49,    private JPasswordField txtContrasena;
+src/conexionbd/vista/VentanaConexion.java,50,    private JTextField txtUrlGenerada;
+src/conexionbd/vista/VentanaConexion.java,51,    private JButton btnProbarConexion;
+src/conexionbd/vista/VentanaConexion.java,52,    private JButton btnLimpiar;
+src/conexionbd/vista/VentanaConexion.java,53,    private JLabel lblEstado;
+src/conexionbd/vista/VentanaConexion.java,54,    private JTextArea txtResultados;
+src/conexionbd/vista/VentanaConexion.java,55,
+src/conexionbd/vista/VentanaConexion.java,56,    public VentanaConexion(ServicioConexion servicioConexion) {
+src/conexionbd/vista/VentanaConexion.java,57,        this.servicioConexion = servicioConexion;
+src/conexionbd/vista/VentanaConexion.java,58,        configurarVentana();
+src/conexionbd/vista/VentanaConexion.java,59,        inicializarComponentes();
+src/conexionbd/vista/VentanaConexion.java,60,        registrarEventos();
+src/conexionbd/vista/VentanaConexion.java,61,        actualizarUrlGenerada();
+src/conexionbd/vista/VentanaConexion.java,62,    }
+src/conexionbd/vista/VentanaConexion.java,63,
+src/conexionbd/vista/VentanaConexion.java,64,    private void configurarVentana() {
+src/conexionbd/vista/VentanaConexion.java,65,"        setTitle(""EA3 - Validador de conexión JDBC"");"
+src/conexionbd/vista/VentanaConexion.java,66,"        setSize(640, 600);"
+src/conexionbd/vista/VentanaConexion.java,67,        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+src/conexionbd/vista/VentanaConexion.java,68,        setLocationRelativeTo(null);
+src/conexionbd/vista/VentanaConexion.java,69,"        setLayout(new BorderLayout(10, 10));"
+src/conexionbd/vista/VentanaConexion.java,70,    }
+src/conexionbd/vista/VentanaConexion.java,71,
+src/conexionbd/vista/VentanaConexion.java,72,    private void inicializarComponentes() {
+src/conexionbd/vista/VentanaConexion.java,73,"        JLabel lblTitulo = new JLabel(""Configuración de la base de datos"", SwingConstants.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,74,"        lblTitulo.setFont(new Font(""Arial"", Font.BOLD, 18));"
+src/conexionbd/vista/VentanaConexion.java,75,"        lblTitulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));"
+src/conexionbd/vista/VentanaConexion.java,76,"        add(lblTitulo, BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,77,
+src/conexionbd/vista/VentanaConexion.java,78,"        JPanel panelCentral = new JPanel(new BorderLayout(10, 10));"
+src/conexionbd/vista/VentanaConexion.java,79,"        panelCentral.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 15));"
+src/conexionbd/vista/VentanaConexion.java,80,"        panelCentral.add(crearPanelFormulario(), BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,81,"        panelCentral.add(crearPanelResultados(), BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,82,"        add(panelCentral, BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,83,
+src/conexionbd/vista/VentanaConexion.java,84,"        add(crearPanelBotones(), BorderLayout.SOUTH);"
+src/conexionbd/vista/VentanaConexion.java,85,    }
+src/conexionbd/vista/VentanaConexion.java,86,
+src/conexionbd/vista/VentanaConexion.java,87,    /** Formulario con GridBagLayout: etiquetas a la izquierda y campos que se estiran. */
+src/conexionbd/vista/VentanaConexion.java,88,    private JPanel crearPanelFormulario() {
+src/conexionbd/vista/VentanaConexion.java,89,        JPanel panel = new JPanel(new GridBagLayout());
+src/conexionbd/vista/VentanaConexion.java,90,"        panel.setBorder(BorderFactory.createTitledBorder(""Datos de conexión""));"
+src/conexionbd/vista/VentanaConexion.java,91,
+src/conexionbd/vista/VentanaConexion.java,92,        cmbMotor = new JComboBox<>(MotorBaseDatos.values());
+src/conexionbd/vista/VentanaConexion.java,93,"        txtServidor = new JTextField(""localhost"");"
+src/conexionbd/vista/VentanaConexion.java,94,        txtPuerto = new JTextField(String.valueOf(MotorBaseDatos.MYSQL.getPuertoPorDefecto()));
+src/conexionbd/vista/VentanaConexion.java,95,"        txtBaseDatos = new JTextField(""iud_academico"");"
+src/conexionbd/vista/VentanaConexion.java,96,"        txtUsuario = new JTextField(""root"");"
+src/conexionbd/vista/VentanaConexion.java,97,        txtContrasena = new JPasswordField();
+src/conexionbd/vista/VentanaConexion.java,98,        txtUrlGenerada = new JTextField();
+src/conexionbd/vista/VentanaConexion.java,99,        txtUrlGenerada.setEditable(false);
+src/conexionbd/vista/VentanaConexion.java,100,
+src/conexionbd/vista/VentanaConexion.java,101,"        agregarFila(panel, 0, ""Motor:"", cmbMotor);"
+src/conexionbd/vista/VentanaConexion.java,102,"        agregarFila(panel, 1, ""Servidor (host):"", txtServidor);"
+src/conexionbd/vista/VentanaConexion.java,103,"        agregarFila(panel, 2, ""Puerto:"", txtPuerto);"
+src/conexionbd/vista/VentanaConexion.java,104,"        agregarFila(panel, 3, ""Base de datos:"", txtBaseDatos);"
+src/conexionbd/vista/VentanaConexion.java,105,"        agregarFila(panel, 4, ""Usuario:"", txtUsuario);"
+src/conexionbd/vista/VentanaConexion.java,106,"        agregarFila(panel, 5, ""Contraseña:"", txtContrasena);"
+src/conexionbd/vista/VentanaConexion.java,107,"        agregarFila(panel, 6, ""URL JDBC:"", txtUrlGenerada);"
+src/conexionbd/vista/VentanaConexion.java,108,        return panel;
+src/conexionbd/vista/VentanaConexion.java,109,    }
+src/conexionbd/vista/VentanaConexion.java,110,
+src/conexionbd/vista/VentanaConexion.java,111,"    private void agregarFila(JPanel panel, int fila, String textoEtiqueta, java.awt.Component campo) {"
+src/conexionbd/vista/VentanaConexion.java,112,        GridBagConstraints restricciones = new GridBagConstraints();
+src/conexionbd/vista/VentanaConexion.java,113,"        restricciones.insets = new Insets(4, 6, 4, 6);"
+src/conexionbd/vista/VentanaConexion.java,114,        restricciones.gridy = fila;
+src/conexionbd/vista/VentanaConexion.java,115,
+src/conexionbd/vista/VentanaConexion.java,116,        restricciones.gridx = 0;
+src/conexionbd/vista/VentanaConexion.java,117,        restricciones.anchor = GridBagConstraints.LINE_END;
+src/conexionbd/vista/VentanaConexion.java,118,"        panel.add(new JLabel(textoEtiqueta), restricciones);"
+src/conexionbd/vista/VentanaConexion.java,119,
+src/conexionbd/vista/VentanaConexion.java,120,        restricciones.gridx = 1;
+src/conexionbd/vista/VentanaConexion.java,121,        restricciones.weightx = 1.0;
+src/conexionbd/vista/VentanaConexion.java,122,        restricciones.fill = GridBagConstraints.HORIZONTAL;
+src/conexionbd/vista/VentanaConexion.java,123,"        panel.add(campo, restricciones);"
+src/conexionbd/vista/VentanaConexion.java,124,    }
+src/conexionbd/vista/VentanaConexion.java,125,
+src/conexionbd/vista/VentanaConexion.java,126,    private JPanel crearPanelResultados() {
+src/conexionbd/vista/VentanaConexion.java,127,"        JPanel panel = new JPanel(new BorderLayout(5, 5));"
+src/conexionbd/vista/VentanaConexion.java,128,"        panel.setBorder(BorderFactory.createTitledBorder(""Resultados""));"
+src/conexionbd/vista/VentanaConexion.java,129,
+src/conexionbd/vista/VentanaConexion.java,130,"        lblEstado = new JLabel(""Esperando prueba de conexión..."");"
+src/conexionbd/vista/VentanaConexion.java,131,"        lblEstado.setFont(new Font(""Arial"", Font.BOLD, 13));"
+src/conexionbd/vista/VentanaConexion.java,132,
+src/conexionbd/vista/VentanaConexion.java,133,"        txtResultados = new JTextArea(10, 40);"
+src/conexionbd/vista/VentanaConexion.java,134,        txtResultados.setEditable(false);
+src/conexionbd/vista/VentanaConexion.java,135,        txtResultados.setLineWrap(true);
+src/conexionbd/vista/VentanaConexion.java,136,        txtResultados.setWrapStyleWord(true);
+src/conexionbd/vista/VentanaConexion.java,137,"        txtResultados.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));"
+src/conexionbd/vista/VentanaConexion.java,138,
+src/conexionbd/vista/VentanaConexion.java,139,"        panel.add(lblEstado, BorderLayout.NORTH);"
+src/conexionbd/vista/VentanaConexion.java,140,"        panel.add(new JScrollPane(txtResultados), BorderLayout.CENTER);"
+src/conexionbd/vista/VentanaConexion.java,141,        return panel;
+src/conexionbd/vista/VentanaConexion.java,142,    }
+src/conexionbd/vista/VentanaConexion.java,143,
+src/conexionbd/vista/VentanaConexion.java,144,    private JPanel crearPanelBotones() {
+src/conexionbd/vista/VentanaConexion.java,145,"        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));"
+src/conexionbd/vista/VentanaConexion.java,146,"        btnProbarConexion = new JButton(""Probar conexión"");"
+src/conexionbd/vista/VentanaConexion.java,147,"        btnLimpiar = new JButton(""Limpiar"");"
+src/conexionbd/vista/VentanaConexion.java,148,        panel.add(btnProbarConexion);
+src/conexionbd/vista/VentanaConexion.java,149,        panel.add(btnLimpiar);
+src/conexionbd/vista/VentanaConexion.java,150,        return panel;
+src/conexionbd/vista/VentanaConexion.java,151,    }
+src/conexionbd/vista/VentanaConexion.java,152,
+src/conexionbd/vista/VentanaConexion.java,153,    private void registrarEventos() {
+src/conexionbd/vista/VentanaConexion.java,154,        cmbMotor.addActionListener(e -> cambiarMotor());
+src/conexionbd/vista/VentanaConexion.java,155,        btnProbarConexion.addActionListener(e -> probarConexion());
+src/conexionbd/vista/VentanaConexion.java,156,        btnLimpiar.addActionListener(e -> limpiarResultados());
+src/conexionbd/vista/VentanaConexion.java,157,
+src/conexionbd/vista/VentanaConexion.java,158,        javax.swing.event.DocumentListener actualizarUrl = new javax.swing.event.DocumentListener() {
+src/conexionbd/vista/VentanaConexion.java,159,            @Override
+src/conexionbd/vista/VentanaConexion.java,160,            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+src/conexionbd/vista/VentanaConexion.java,161,                actualizarUrlGenerada();
+src/conexionbd/vista/VentanaConexion.java,162,            }
+src/conexionbd/vista/VentanaConexion.java,163,
+src/conexionbd/vista/VentanaConexion.java,164,            @Override
+src/conexionbd/vista/VentanaConexion.java,165,            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+src/conexionbd/vista/VentanaConexion.java,166,                actualizarUrlGenerada();
+src/conexionbd/vista/VentanaConexion.java,167,            }
+src/conexionbd/vista/VentanaConexion.java,168,
+src/conexionbd/vista/VentanaConexion.java,169,            @Override
+src/conexionbd/vista/VentanaConexion.java,170,            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+src/conexionbd/vista/VentanaConexion.java,171,                actualizarUrlGenerada();
+src/conexionbd/vista/VentanaConexion.java,172,            }
+src/conexionbd/vista/VentanaConexion.java,173,        };
+src/conexionbd/vista/VentanaConexion.java,174,        txtServidor.getDocument().addDocumentListener(actualizarUrl);
+src/conexionbd/vista/VentanaConexion.java,175,        txtPuerto.getDocument().addDocumentListener(actualizarUrl);
+src/conexionbd/vista/VentanaConexion.java,176,        txtBaseDatos.getDocument().addDocumentListener(actualizarUrl);
+src/conexionbd/vista/VentanaConexion.java,177,    }
+src/conexionbd/vista/VentanaConexion.java,178,
+src/conexionbd/vista/VentanaConexion.java,179,    private void cambiarMotor() {
+src/conexionbd/vista/VentanaConexion.java,180,        MotorBaseDatos motor = (MotorBaseDatos) cmbMotor.getSelectedItem();
+src/conexionbd/vista/VentanaConexion.java,181,        txtPuerto.setText(String.valueOf(motor.getPuertoPorDefecto()));
+src/conexionbd/vista/VentanaConexion.java,182,        actualizarUrlGenerada();
+src/conexionbd/vista/VentanaConexion.java,183,    }
+src/conexionbd/vista/VentanaConexion.java,184,
+src/conexionbd/vista/VentanaConexion.java,185,    private void actualizarUrlGenerada() {
+src/conexionbd/vista/VentanaConexion.java,186,        MotorBaseDatos motor = (MotorBaseDatos) cmbMotor.getSelectedItem();
+src/conexionbd/vista/VentanaConexion.java,187,        try {
+src/conexionbd/vista/VentanaConexion.java,188,            int puerto = Integer.parseInt(txtPuerto.getText().trim());
+src/conexionbd/vista/VentanaConexion.java,189,"            txtUrlGenerada.setText(motor.construirUrl(txtServidor.getText().trim(), puerto,"
+src/conexionbd/vista/VentanaConexion.java,190,                    txtBaseDatos.getText().trim()));
+src/conexionbd/vista/VentanaConexion.java,191,        } catch (NumberFormatException e) {
+src/conexionbd/vista/VentanaConexion.java,192,"            txtUrlGenerada.setText(""(puerto no válido)"");"
+src/conexionbd/vista/VentanaConexion.java,193,        }
+src/conexionbd/vista/VentanaConexion.java,194,    }
+src/conexionbd/vista/VentanaConexion.java,195,
+src/conexionbd/vista/VentanaConexion.java,196,    /** Lee los campos de la ventana y arma el objeto de configuración. */
+src/conexionbd/vista/VentanaConexion.java,197,    private ConfiguracionConexion leerConfiguracion() {
+src/conexionbd/vista/VentanaConexion.java,198,        int puerto;
+src/conexionbd/vista/VentanaConexion.java,199,        try {
+src/conexionbd/vista/VentanaConexion.java,200,            puerto = Integer.parseInt(txtPuerto.getText().trim());
+src/conexionbd/vista/VentanaConexion.java,201,        } catch (NumberFormatException e) {
+src/conexionbd/vista/VentanaConexion.java,202,"            throw new IllegalArgumentException(""El puerto debe ser un número entero."");"
+src/conexionbd/vista/VentanaConexion.java,203,        }
+src/conexionbd/vista/VentanaConexion.java,204,        return new ConfiguracionConexion(
+src/conexionbd/vista/VentanaConexion.java,205,"                (MotorBaseDatos) cmbMotor.getSelectedItem(),"
+src/conexionbd/vista/VentanaConexion.java,206,"                txtServidor.getText().trim(),"
+src/conexionbd/vista/VentanaConexion.java,207,"                puerto,"
+src/conexionbd/vista/VentanaConexion.java,208,"                txtBaseDatos.getText().trim(),"
+src/conexionbd/vista/VentanaConexion.java,209,"                txtUsuario.getText().trim(),"
+src/conexionbd/vista/VentanaConexion.java,210,                txtContrasena.getPassword());
+src/conexionbd/vista/VentanaConexion.java,211,    }
+src/conexionbd/vista/VentanaConexion.java,212,
+src/conexionbd/vista/VentanaConexion.java,213,    private void probarConexion() {
+src/conexionbd/vista/VentanaConexion.java,214,        ConfiguracionConexion configuracion;
+src/conexionbd/vista/VentanaConexion.java,215,        try {
+src/conexionbd/vista/VentanaConexion.java,216,            configuracion = leerConfiguracion();
+src/conexionbd/vista/VentanaConexion.java,217,        } catch (IllegalArgumentException e) {
+src/conexionbd/vista/VentanaConexion.java,218,"            JOptionPane.showMessageDialog(this, e.getMessage(), ""Dato no válido"","
+src/conexionbd/vista/VentanaConexion.java,219,                    JOptionPane.WARNING_MESSAGE);
+src/conexionbd/vista/VentanaConexion.java,220,            return;
+src/conexionbd/vista/VentanaConexion.java,221,        }
+src/conexionbd/vista/VentanaConexion.java,222,
+src/conexionbd/vista/VentanaConexion.java,223,        btnProbarConexion.setEnabled(false);
+src/conexionbd/vista/VentanaConexion.java,224,        lblEstado.setForeground(Color.DARK_GRAY);
+src/conexionbd/vista/VentanaConexion.java,225,"        lblEstado.setText(""Conectando a "" + configuracion.getUrl() + "" ..."");"
+src/conexionbd/vista/VentanaConexion.java,226,
+src/conexionbd/vista/VentanaConexion.java,227,        // La conexión se hace en segundo plano para que la ventana no se congele.
+src/conexionbd/vista/VentanaConexion.java,228,"        new SwingWorker<ResultadoConexion, Void>() {"
+src/conexionbd/vista/VentanaConexion.java,229,            @Override
+src/conexionbd/vista/VentanaConexion.java,230,            protected ResultadoConexion doInBackground() {
+src/conexionbd/vista/VentanaConexion.java,231,                return servicioConexion.probarConexion(configuracion);
+src/conexionbd/vista/VentanaConexion.java,232,            }
+src/conexionbd/vista/VentanaConexion.java,233,
+src/conexionbd/vista/VentanaConexion.java,234,            @Override
+src/conexionbd/vista/VentanaConexion.java,235,            protected void done() {
+src/conexionbd/vista/VentanaConexion.java,236,                try {
+src/conexionbd/vista/VentanaConexion.java,237,                    mostrarResultado(get());
+src/conexionbd/vista/VentanaConexion.java,238,                } catch (InterruptedException | ExecutionException e) {
+src/conexionbd/vista/VentanaConexion.java,239,"                    mostrarResultado(ResultadoConexion.error(""Error inesperado: "" + e.getMessage()));"
+src/conexionbd/vista/VentanaConexion.java,240,                } finally {
+src/conexionbd/vista/VentanaConexion.java,241,                    btnProbarConexion.setEnabled(true);
+src/conexionbd/vista/VentanaConexion.java,242,                }
+src/conexionbd/vista/VentanaConexion.java,243,            }
+src/conexionbd/vista/VentanaConexion.java,244,        }.execute();
+src/conexionbd/vista/VentanaConexion.java,245,    }
+src/conexionbd/vista/VentanaConexion.java,246,
+src/conexionbd/vista/VentanaConexion.java,247,    private void mostrarResultado(ResultadoConexion resultado) {
+src/conexionbd/vista/VentanaConexion.java,248,        if (resultado.isExitoso()) {
+src/conexionbd/vista/VentanaConexion.java,249,            lblEstado.setForeground(COLOR_EXITO);
+src/conexionbd/vista/VentanaConexion.java,250,"            lblEstado.setText(""Conexión exitosa"");"
+src/conexionbd/vista/VentanaConexion.java,251,        } else {
+src/conexionbd/vista/VentanaConexion.java,252,            lblEstado.setForeground(COLOR_ERROR);
+src/conexionbd/vista/VentanaConexion.java,253,"            lblEstado.setText(""No fue posible conectar"");"
+src/conexionbd/vista/VentanaConexion.java,254,        }
+src/conexionbd/vista/VentanaConexion.java,255,"        txtResultados.append(""["" + LocalTime.now().format(FORMATO_HORA) + ""] """
+src/conexionbd/vista/VentanaConexion.java,256,"                + resultado.getDetalle() + ""\n\n"");"
+src/conexionbd/vista/VentanaConexion.java,257,        txtResultados.setCaretPosition(txtResultados.getDocument().getLength());
+src/conexionbd/vista/VentanaConexion.java,258,    }
+src/conexionbd/vista/VentanaConexion.java,259,
+src/conexionbd/vista/VentanaConexion.java,260,    private void limpiarResultados() {
+src/conexionbd/vista/VentanaConexion.java,261,"        txtResultados.setText("""");"
+src/conexionbd/vista/VentanaConexion.java,262,        lblEstado.setForeground(Color.DARK_GRAY);
+src/conexionbd/vista/VentanaConexion.java,263,"        lblEstado.setText(""Esperando prueba de conexión..."");"
+src/conexionbd/vista/VentanaConexion.java,264,    }
+src/conexionbd/vista/VentanaConexion.java,265,}
