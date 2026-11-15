@@ -1,16 +1,15 @@
 package conexionbd;
 
-import conexionbd.servicio.ServicioConexion;
 import conexionbd.vista.VentanaConexion;
 
 import javax.swing.SwingUtilities;
 
-/** Punto de entrada: crea el servicio, se lo entrega a la ventana y la muestra. */
+// Punto de entrada del programa: crea la ventana y la muestra
 public class Main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VentanaConexion ventana = new VentanaConexion(new ServicioConexion());
+            VentanaConexion ventana = new VentanaConexion();
             ventana.setVisible(true);
         });
     }
